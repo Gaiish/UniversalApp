@@ -10,6 +10,7 @@ import "react-native-reanimated";
 import "../../global.css";
 
 import { SCREENS } from "@/constants/Routes";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function RootLayout() {
@@ -23,8 +24,28 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <AuthProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <RootNavigator />
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </AuthProvider>
+  );
+}
+
+const RootNavigator = () => {
+  const { session } = useAuth();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen
+          name={SCREENS.DASHBOARD}
+          options={{ headerShown: false }}
+        />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!session}>
         <Stack.Screen name={SCREENS.INDEX} options={{ headerShown: false }} />
         <Stack.Screen
           name={SCREENS.LOGIN}
@@ -40,9 +61,9 @@ export default function RootLayout() {
             presentation: "card",
           }}
         />
+
         <Stack.Screen name={SCREENS.NOT_FOUND} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      </Stack.Protected>
+    </Stack>
   );
-}
+};

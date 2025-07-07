@@ -1,31 +1,34 @@
+import Input from "@/components/Input";
+import Spinner from "@/components/Spinner";
+import { useAuth } from "@/contexts/AuthContext";
+import { LoginFormData, loginSchema } from "@/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable, Text, View } from "react-native";
 
-interface LoginFormProps {
-  onSubmit?: (email: string, password: string) => void;
-}
-
-export default function LoginForm({ onSubmit }: LoginFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const { signIn } = useAuth();
 
-  const handleSubmit = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
+  const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-    try {
-      await onSubmit?.(email.trim(), password);
-    } catch (error) {
-      Alert.alert("Error", "Login failed. Please try again.");
-    } finally {
-      setIsLoading(false);
+    setFormError(null);
+    const { error } = await signIn(data.email, data.password);
+    if (error) {
+      setFormError(error.message || "Login failed. Please try again.");
     }
+    setIsLoading(false);
   };
-
   return (
     <View className="gap-8">
       <View className="gap-3">
@@ -42,34 +45,54 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
           <Text className="text-base font-medium text-gray-700 dark:text-gray-200">
             Email
           </Text>
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            placeholderTextColor="#9CA3AF"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            className="dark:focus:bg-gray-750 w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-5 text-lg text-gray-900 focus:border-blue-500 focus:bg-white dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            )}
           />
+          {errors.email && (
+            <Text className="text-sm text-red-500">{errors.email.message}</Text>
+          )}
         </View>
 
         <View className="gap-3">
           <Text className="text-base font-medium text-gray-700 dark:text-gray-200">
             Password
           </Text>
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Enter your password"
-            placeholderTextColor="#9CA3AF"
-            secureTextEntry
-            className="dark:focus:bg-gray-750 w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-5 text-lg text-gray-900 focus:border-blue-500 focus:bg-white dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="Enter your password"
+                secureTextEntry
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit(onSubmit)}
+              />
+            )}
           />
+          {errors.password && (
+            <Text className="text-sm text-red-500">
+              {errors.password.message}
+            </Text>
+          )}
         </View>
       </View>
 
       <Pressable
-        onPress={handleSubmit}
+        onPress={handleSubmit(onSubmit)}
         disabled={isLoading}
         className={`w-full rounded-xl px-4 py-5 ${
           isLoading
@@ -77,11 +100,17 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
             : "bg-blue-600 hover:bg-blue-700 active:bg-blue-800"
         }`}
       >
-        <Text className="text-center text-lg font-semibold text-white">
-          {isLoading ? "Signing in..." : "Sign in"}
-        </Text>
+        {isLoading ? (
+          <Spinner size="small" color="#fff" />
+        ) : (
+          <Text className="text-center text-lg font-semibold text-white">
+            Sign in
+          </Text>
+        )}
       </Pressable>
-
+      {formError && (
+        <Text className="text-center text-red-500 mt-2">{formError}</Text>
+      )}
       <View className="gap-4">
         <Pressable>
           <Text className="text-center font-medium text-blue-600 dark:text-blue-400">
