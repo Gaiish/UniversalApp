@@ -1,4 +1,5 @@
 import LoginForm from "@/components/forms/LoginForm";
+import AuthNavbar from "@/components/ui/AuthNavbar";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,7 +12,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
-      {/* <AuthNavbar /> */}
+      <AuthNavbar />
 
       <ScrollView
         className="flex-1"
