@@ -2,17 +2,21 @@ import Input from "@/components/Input";
 import { Controller, useFormContext } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 
+type ProfileStepBioAvatarProps = {
+  onNext: () => void;
+  onBack: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+  onSubmit?: () => void;
+  loading?: boolean;
+};
+
 export default function ProfileStepBioAvatar({
   onNext,
   onBack,
   isFirst,
   isLast,
-}: {
-  onNext: () => void;
-  onBack: () => void;
-  isFirst: boolean;
-  isLast: boolean;
-}) {
+}: ProfileStepBioAvatarProps) {
   const {
     control,
     formState: { errors },
@@ -25,13 +29,14 @@ export default function ProfileStepBioAvatar({
   };
 
   return (
-    <View className="gap-6 p-6">
+    <View className="gap-4 pt-0 pb-0 px-4 sm:p-6">
       <Text className="text-2xl font-bold text-gray-900 dark:text-white">
         Bio & Avatar
       </Text>
-      <Text className="text-base text-gray-600 dark:text-gray-300 mb-2">
+      <Text className="text-base text-gray-600 dark:text-gray-300 mb-1">
         Tell us about yourself and add a profile picture
       </Text>
+      
 
       {/* Avatar/profile picture upload */}
 

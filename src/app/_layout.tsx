@@ -9,8 +9,10 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import "../../global.css";
 
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { SCREENS } from "@/constants/Routes";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function RootLayout() {
@@ -24,12 +26,18 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <RootNavigator />
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <RootNavigator />
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
@@ -42,6 +50,14 @@ const RootNavigator = () => {
         <Stack.Screen
           name={SCREENS.DASHBOARD}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={SCREENS.PROFILE}
+          options={{
+            headerShown: true,
+            title: "Profile Settings",
+            headerBackButtonDisplayMode: "minimal",
+          }}
         />
       </Stack.Protected>
 

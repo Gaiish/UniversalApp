@@ -1,5 +1,6 @@
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -7,16 +8,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DashboardScreen() {
   const { user, signOut } = useAuth();
-  const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
-    setError(null);
     setLoading(true);
-    const { error } = await signOut();
-    setLoading(false);
-    if (error) {
-      setError(error.message || "Failed to sign out. Please try again.");
+
+    try {
+      const { error } = await signOut();
+      if (error) {
+        showToast({
+          type: "error",
+          title: "Sign Out Failed",
+          message: error.message || "Failed to sign out. Please try again.",
+        });
+      }
+    } catch {
+      showToast({
+        type: "error",
+        title: "Error",
+        message: "An unexpected error occurred.",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,9 +46,6 @@ export default function DashboardScreen() {
               {user?.email}
             </Text>
           </View>
-          {error && (
-            <Text className="text-center text-red-500 mt-2">{error}</Text>
-          )}
           <View className="gap-4">
             <Link href="/(app)/profile" asChild>
               <Pressable className="w-full rounded-xl bg-blue-600 px-4 py-4 hover:bg-blue-700 active:bg-blue-800">

@@ -3,5 +3,6 @@ export const SCREENS = {
   LOGIN: "login",
   SIGNUP: "signup",
   DASHBOARD: "(app)/index",
+  PROFILE: "(app)/profile",
   NOT_FOUND: "+not-found",
 };

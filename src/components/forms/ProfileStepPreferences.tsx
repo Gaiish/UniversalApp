@@ -15,7 +15,16 @@ const LANGUAGE_OPTIONS = [
   { label: "Deutsch", value: "de" },
 ];
 
-export default function ProfileStepPreferences({ onNext, onBack, isFirst, isLast }: { onNext: () => void; onBack: () => void; isFirst: boolean; isLast: boolean }) {
+type ProfileStepPreferencesProps = {
+  onNext: () => void;
+  onBack: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+  onSubmit?: () => void;
+  loading?: boolean;
+};
+
+export default function ProfileStepPreferences({ onNext, onBack, isFirst, isLast }: ProfileStepPreferencesProps) {
   const { control, formState: { errors }, trigger } = useFormContext();
 
   const handleNext = async () => {
@@ -30,9 +39,10 @@ export default function ProfileStepPreferences({ onNext, onBack, isFirst, isLast
   };
 
   return (
-    <View className="gap-6 p-6">
+    <View className="gap-4 pt-0 pb-0 px-4 sm:p-6">
       <Text className="text-2xl font-bold text-gray-900 dark:text-white">Preferences</Text>
-      <Text className="text-base text-gray-600 dark:text-gray-300 mb-2">Set your preferences and notifications</Text>
+      <Text className="text-base text-gray-600 dark:text-gray-300 mb-1">Set your preferences and notifications</Text>
+      
 
       {/* Currency */}
       <View className="gap-2">

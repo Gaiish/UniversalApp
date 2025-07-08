@@ -3,30 +3,34 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useFormContext } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import NotificationChip from "./NotificationChip";
+type ProfileStepReviewProps = {
+  onBack: () => void;
+  onSubmit?: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+  loading: boolean;
+  onNext?: () => void;
+};
+
 export default function ProfileStepReview({
   onBack,
   onSubmit,
   isFirst,
   isLast,
   loading,
-}: {
-  onBack: () => void;
-  onSubmit: () => void;
-  isFirst: boolean;
-  isLast: boolean;
-  loading: boolean;
-}) {
+}: ProfileStepReviewProps) {
   const { getValues } = useFormContext();
   const values = getValues();
 
   return (
-    <View className="gap-8 p-6">
-      <Text className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
+    <View className="gap-4 pt-0 pb-0 px-4 sm:p-6">
+      <Text className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">
         Review your profile
       </Text>
-      <Text className="text-lg text-gray-600 dark:text-gray-300 mb-4">
+      <Text className="text-lg text-gray-600 dark:text-gray-300 mb-1">
         Please double-check your details before submitting.
       </Text>
+      
 
       {/* Personal Info */}
       <View className="mb-6">
@@ -34,7 +38,7 @@ export default function ProfileStepReview({
           Personal Information
         </Text>
         <View className="flex-row flex-wrap items-center mb-2">
-          <Text className="text-lg font-semibold mr-2">
+          <Text className="text-lg font-semibold mr-2 text-gray-900 dark:text-white">
             {values.firstName} {values.lastName}
           </Text>
         </View>

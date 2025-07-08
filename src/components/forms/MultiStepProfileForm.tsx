@@ -33,7 +33,6 @@ export default function MultiStepProfileForm({
     error: profileError,
     upsertProfile,
   } = useProfileData(user?.id);
-  console.log({ profile, profileLoading, profileError });
 
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +79,7 @@ export default function MultiStepProfileForm({
   };
 
   const StepComponent = steps[currentStep];
+  const isReviewStep = currentStep === steps.length - 1;
 
   if (profileLoading) {
     return (
@@ -93,37 +93,71 @@ export default function MultiStepProfileForm({
   }
 
   return (
-    <FormProvider {...methods}>
-      {currentStep === steps.length - 1 ? (
-        <ProfileStepReview
-          onBack={() => setCurrentStep((s) => s - 1)}
-          onSubmit={methods.handleSubmit(handleFinalSubmit)}
-          isFirst={currentStep === 0}
-          isLast={true}
-          loading={submitLoading}
-        />
-      ) : (
-        <StepComponent
-          onNext={() => setCurrentStep((s) => s + 1)}
-          onBack={() => setCurrentStep((s) => s - 1)}
-          isFirst={currentStep === 0}
-          isLast={currentStep === steps.length - 1}
-          onSubmit={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-          loading={submitLoading}
-        />
-      )}
-      {(error || profileError) && (
-        <Text className="text-center text-red-500 mt-2">
-          {error || profileError}
-        </Text>
-      )}
-      {success && (
-        <Text className="text-center text-green-600 mt-2">
-          Profile updated! Redirecting…
-        </Text>
-      )}
-    </FormProvider>
+    <View className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-black py-8 px-2">
+      {/* Web/Desktop Card Container */}
+      <View className="hidden md:block w-full max-w-xl rounded-xl shadow-lg bg-white dark:bg-gray-900 p-4 sm:p-8 mx-auto">
+        <FormProvider {...methods}>
+          {isReviewStep ? (
+            <ProfileStepReview
+              onBack={() => setCurrentStep((s) => s - 1)}
+              onSubmit={methods.handleSubmit(handleFinalSubmit)}
+              isFirst={currentStep === 0}
+              isLast={true}
+              loading={submitLoading}
+            />
+          ) : (
+            <StepComponent
+              onNext={() => setCurrentStep((s) => s + 1)}
+              onBack={() => setCurrentStep((s) => s - 1)}
+              isFirst={currentStep === 0}
+              isLast={currentStep === steps.length - 1}
+              loading={submitLoading}
+            />
+          )}
+          {(error || profileError) && (
+            <Text className="text-center text-red-500 mt-2">
+              {error || profileError}
+            </Text>
+          )}
+          {success && (
+            <Text className="text-center text-green-600 mt-2">
+              Profile updated! Redirecting…
+            </Text>
+          )}
+        </FormProvider>
+      </View>
+      {/* Mobile/Tablet Full-Width Container */}
+      <View className="block md:hidden w-full">
+        <FormProvider {...methods}>
+          {isReviewStep ? (
+            <ProfileStepReview
+              onBack={() => setCurrentStep((s) => s - 1)}
+              onSubmit={methods.handleSubmit(handleFinalSubmit)}
+              isFirst={currentStep === 0}
+              isLast={true}
+              loading={submitLoading}
+            />
+          ) : (
+            <StepComponent
+              onNext={() => setCurrentStep((s) => s + 1)}
+              onBack={() => setCurrentStep((s) => s - 1)}
+              isFirst={currentStep === 0}
+              isLast={currentStep === steps.length - 1}
+              loading={submitLoading}
+            />
+          )}
+          {(error || profileError) && (
+            <Text className="text-center text-red-500 mt-2">
+              {error || profileError}
+            </Text>
+          )}
+          {success && (
+            <Text className="text-center text-green-600 mt-2">
+              Profile updated! Redirecting…
+            </Text>
+          )}
+        </FormProvider>
+      </View>
+    </View>
   );
 }

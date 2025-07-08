@@ -1,6 +1,7 @@
 import Input from "@/components/Input";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import { LoginFormData, loginSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -9,8 +10,8 @@ import { Pressable, Text, View } from "react-native";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
   const { signIn } = useAuth();
+  const { showToast } = useToast();
 
   const {
     control,
@@ -22,12 +23,25 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-    setFormError(null);
-    const { error } = await signIn(data.email, data.password);
-    if (error) {
-      setFormError(error.message || "Login failed. Please try again.");
+    
+    try {
+      const { error } = await signIn(data.email, data.password);
+      if (error) {
+        showToast({
+          type: 'error',
+          title: 'Login Failed',
+          message: error.message || 'Please check your credentials and try again.',
+        });
+      }
+    } catch {
+      showToast({
+        type: 'error',
+        title: 'Login Error',
+        message: 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   return (
     <View className="gap-8">
@@ -108,9 +122,6 @@ export default function LoginForm() {
           </Text>
         )}
       </Pressable>
-      {formError && (
-        <Text className="text-center text-red-500 mt-2">{formError}</Text>
-      )}
       <View className="gap-4">
         <Pressable>
           <Text className="text-center font-medium text-blue-600 dark:text-blue-400">
