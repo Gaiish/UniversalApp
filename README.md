@@ -1,50 +1,132 @@
-# Welcome to your Expo app 👋
+# Universal App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple universal application built with Expo, TypeScript, and React Native. Runs on iOS, Android, and Web from a single codebase.
 
-## Get started
+- **Authentication**: Powered by [Supabase](https://supabase.com/).
+- **Form Management**: Uses [React Hook Form](https://react-hook-form.com/) and [Zod](https://zod.dev/) for schema validation and type-safe forms.
 
-1. Install dependencies
+## Quick Start
 
-   ```bash
-   npm install
-   ```
+### Prerequisites
 
-2. Start the app
+- Node.js 18+
+- npm
+- Expo CLI: `npm install -g @expo/cli`
+- [Supabase](https://supabase.com/).
 
-   ```bash
-   npx expo start
-   ```
+### Environment Setup
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Create a `.env` from `.env.example`:
 
 ```bash
-npm run reset-project
+cp .env.example .env
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Then edit `.env` with your own Supabase credentials. Example:
 
-## Learn more
+```env
+EXPO_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Installation & Development
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+# Install dependencies
+npm install
 
-## Join the community
+# Start development server (choose platform)
+npm run start      # Opens Expo Dev Tools
+npm run web        # Start web development
+npm run android    # Start Android development
+npm run ios        # Start iOS development
 
-Join our community of developers creating universal apps.
+# Other commands
+npm run lint       # Run ESLint
+npm test          # Run Jest tests
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Production Builds
+
+```bash
+# Build for all platforms via EAS
+eas build --platform all
+
+# Web deployment (auto-deployed to Vercel on main branch)
+npm run build
+```
+
+---
+
+## 📚 Why **Expo + React Native**
+
+### Decision at a Glance
+
+| Criterion        | Expo + RN (managed)                                                 | Bare React Native                                                              | Flutter / Others                             |
+| ---------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
+| **Language fit** | TypeScript + React (what the team already writes)                   | Same, but deeper native plumbing                                               | New language (Dart) or JS wrappers           |
+| **Spin-up time** | `npx create-expo-app` → working iOS/Android/Web in ≈ 1 h            | Fastlane + Xcode/Gradle setup takes several days on first run                  | Same infra work **plus** new toolchain       |
+| **Ops overhead** | Cloud builds & OTA via **EAS**; linear, predictable bill            | Self-host CI; **macOS minutes cost 10×** Linux and spike at every iOS SDK drop | Similar to bare RN, larger binaries          |
+| **Prod proof**   | **Bluesky Social**, Brex, Cameo, ZOE run this stack in public repos | Meta Marketplace, X (Twitter Lite), Flipkart                                   | Google Ads, BMW, eBay Motors (mainly mobile) |
+| **Escape hatch** | `eas prebuild` ejects to bare RN                                    | —                                                                              | Full rewrite required                        |
+
+> Expo's managed workflow allows to ship iOS, Android **and** Web from one TypeScript repo with almost zero DevOps, validated at scale by apps like **Bluesky Social** (In future, its possible to eject to bare React Native when deep native work becomes necessary).
+
+### When Expo + RN Is the Sweet Spot
+
+- **Small teams**, primarily web/React engineers.
+- Need **web parity** (same features/UX on web as mobile) from day 1 (Expo Web + NativeWind).
+- Happy to trade a small per-build fee for zero platform toil.
+- Feature set covered by existing expo modules.
+
+---
+
+## Tech Stack
+
+### Core Framework
+
+- **Expo SDK 52** - Universal app platform
+- **React Native** - Cross-platform mobile development
+- **TypeScript** - Type safety and developer experience
+- **Expo Router** - File-based routing with Stack.Protected
+
+### UI & Styling
+
+- **NativeWind** - Tailwind CSS utilities for React Native
+
+### State Management & Forms
+
+- **React Context** - Application state management
+- **React Hook Form** - Performant forms with easy validation
+- **Zod** - TypeScript-first schema validation
+
+### Authentication
+
+- **Supabase Auth**
+
+### Development & Deployment
+
+- **GitHub Actions** - Continuous integration
+- **EAS Build** - Cloud builds for iOS/Android
+- **Vercel** - Web deployment and hosting
+- **Jest** - Unit testing framework
+- **ESLint** - Code linting and formatting
+
+## Project Structure
+
+```
+src/
+├── app/                 # Expo Router pages
+│   ├── (app)/          # Protected app routes
+│   ├── (auth)/         # Authentication routes
+│   └── _layout.tsx     # Root layout with providers
+├── components/         # Reusable UI components
+│   ├── forms/         # Form components
+│   └── ui/            # Base UI components
+├── contexts/          # React Context providers
+├── hooks/             # Custom React hooks
+├── lib/               # Third-party library configurations
+├── schemas/           # Zod validation schemas
+├── services/          # API and business logic
+└── constants/         # App constants and configuration
+```
